@@ -13,7 +13,7 @@
     </div>
     <div class="panel-body">
         <ul class="nav nav-tabs" id="myTab">
-            <li class="${(tab==1)?'active':''}"><a href="#ciudad">Ciduad</a></li>
+            <li class="${(tab==1)?'active':''}"><a href="#ciudad">Ciudad</a></li>
             <li class="${(tab==2)?'active':''}"><a href="#hotel">Hotel</a></li>
             <li class="${(tab==3)?'active':''}"><a href="#fecha">Fecha</a></li>
         </ul>
@@ -46,17 +46,39 @@
                     </thead>
                     <tbody>
                         <c:forEach var="u" items="${hotelesc}" varStatus="estado">
-                            <tr>
-                                <td>${u.nombre}</td>
-                                <td>${u.direccion}</td>
-                                <td>${u.ciudad}</td>
-                                <td>${u.precioSimples}€</td>
-                                <td>${u.precioDobles}€</td>
-                                <td>${u.precioTriples}€</td>
-                                <td>
-                                    <a class="label label-success" href="/Hoteles-DAE-cliente-WS/operador/crearreserva"><i class="glyphicon glyphicon-plus-sign"></i></a>
-                                </td>
-                            </tr>
+
+                            <c:if test="${u.nombre == null}">
+                            </tbody>
+                        </table>
+                        <br />
+                        <h3>Ciudades Cercanas</h3>
+                        <table class="table table-striped table-condensed table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Nombre</th>
+                                    <th>Dirección</th>
+                                    <th>Ciudad</th>
+                                    <th>Precio habitaciones simples</th>
+                                    <th>Precio habitaciones dobles</th>
+                                    <th>Precio habitaciones triples</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </c:if>
+                            <c:if test="${u.nombre != null}">
+                                <tr>
+                                    <td>${u.nombre}</td>
+                                    <td>${u.direccion}</td>
+                                    <td>${u.ciudad}</td>
+                                    <td>${u.precioSimples}€</td>
+                                    <td>${u.precioDobles}€</td>
+                                    <td>${u.precioTriples}€</td>
+                                    <td>
+                                        <a class="label label-success" href="/Hoteles-DAE-cliente-WS/operador/crearreserva"><i class="glyphicon glyphicon-plus-sign"></i></a>
+                                    </td>
+                                </tr>
+                            </c:if>
                         </c:forEach>
                     </tbody>
                 </table>
