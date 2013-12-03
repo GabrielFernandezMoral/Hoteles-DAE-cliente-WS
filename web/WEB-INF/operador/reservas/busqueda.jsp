@@ -69,7 +69,7 @@
                             <c:if test="${u.nombre != null}">
                             <form role="form">
                                 <tr>
-                                    <td>${u.nombre}<input type="hidden" class="form-control" value="${u.nombre}" name="nombreH"/></td>
+                                    <td>${u.nombre}<input type="hidden" value="${u.nombre}" name="nombreH"/></td>
                                     <td>${u.direccion}</td>
                                     <td>${u.ciudad}</td>
                                     <td>${u.precioSimples}€</td>

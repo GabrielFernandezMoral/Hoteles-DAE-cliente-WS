@@ -28,7 +28,7 @@
             </thead>
             <tbody>
                 <c:forEach var="u" items="${usuarios}" varStatus="estado">
-                    <tr if="fila${u.dni}">
+                    <tr>
                         <td>${u.nombre}</td>
                         <td>${u.dni}</td>
                         <td>${u.direccion}</td>
