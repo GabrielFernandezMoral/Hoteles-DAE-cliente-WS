@@ -67,19 +67,21 @@
                             <tbody>
                             </c:if>
                             <c:if test="${u.nombre != null}">
+                            <form role="form">
                                 <tr>
-                                    <td>${u.nombre}</td>
+                                    <td>${u.nombre}<input type="hidden" class="form-control" value="${u.nombre}" name="nombreH"/></td>
                                     <td>${u.direccion}</td>
                                     <td>${u.ciudad}</td>
                                     <td>${u.precioSimples}€</td>
                                     <td>${u.precioDobles}€</td>
                                     <td>${u.precioTriples}€</td>
                                     <td>
-                                        <a class="label label-success" href="/Hoteles-DAE-cliente-WS/operador/crearreserva"><i class="glyphicon glyphicon-plus-sign"></i></a>
+                                        <button type="submit" class="btn btn-success" name="cReserva"><i class="glyphicon glyphicon-plus-sign"></i></button>
                                     </td>
                                 </tr>
-                            </c:if>
-                        </c:forEach>
+                            </form>
+                        </c:if>
+                    </c:forEach>
                     </tbody>
                 </table>
             </div>
@@ -110,17 +112,19 @@
                     </thead>
                     <tbody>
                         <c:forEach var="u" items="${hotelesh}" varStatus="estado">
-                            <tr>
-                                <td>${u.nombre}</td>
-                                <td>${u.direccion}</td>
-                                <td>${u.ciudad}</td>
-                                <td>${u.precioSimples}€</td>
-                                <td>${u.precioDobles}€</td>
-                                <td>${u.precioTriples}€</td>
-                                <td>
-                                    <a class="label label-success" href="/Hoteles-DAE-cliente-WS/operador/crearreserva"><i class="glyphicon glyphicon-plus-sign"></i></a>
-                                </td>
-                            </tr>
+                            <form role="form">
+                                <tr>
+                                    <td>${u.nombre}<input type="hidden" class="form-control" value="${u.nombre}" name="nombreH"/></td>
+                                    <td>${u.direccion}</td>
+                                    <td>${u.ciudad}</td>
+                                    <td>${u.precioSimples}€</td>
+                                    <td>${u.precioDobles}€</td>
+                                    <td>${u.precioTriples}€</td>
+                                    <td>
+                                        <button type="submit" class="btn btn-success" name="cReserva"><i class="glyphicon glyphicon-plus-sign"></i></button>
+                                    </td>
+                                </tr>
+                            </form>
                         </c:forEach>
                     </tbody>
                 </table>

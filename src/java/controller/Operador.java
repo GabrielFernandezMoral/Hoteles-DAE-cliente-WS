@@ -57,38 +57,16 @@ public class Operador extends HttpServlet {
 
         String action = (request.getPathInfo() != null ? request.getPathInfo() : "");
 
-        if (action.equals("/listadousuarios")) {
-
-            request.setAttribute("usuarios", servicioOperador.listaUsuarios());
-
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/usuarios/listado.jsp");
-            rd.forward(request, response);
-        } else if (action.equals("/nuevousuario")) {
-
-            if (request.getParameter("crear") != null) {
-
-                String nombre = request.getParameter("nombre");
-                String direccion = request.getParameter("direccion");
-                String dni = request.getParameter("dni");
-                try {
-                    servicioOperador.altaUsuario(nombre, direccion, dni);
-                } catch (UsuarioErrorDatos_Exception ex) {
-                    System.out.println("No se ha podido crear el usuario");
-                } catch (UsuarioErrorPersistir_Exception ex) {
-
-                }
-                response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadousuarios");
-
-            } else if (request.getParameter("cancelar") != null) {
-
-                response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadousuarios");
-
-            } else {
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/usuarios/nuevo.jsp");
+        switch (action) {
+            case "/listadousuarios": {
+                request.setAttribute("usuarios", servicioOperador.listaUsuarios());
+                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/usuarios/listado.jsp");
                 rd.forward(request, response);
+                break;
             }
 
-        } else if (action.equals("/modificarusuario")) {
+            case "/nuevousuario":
+                if (request.getParameter("crear") != null) {
 
             if (request.getParameter("modificar") != null) {
                 String nombre = request.getParameter("nombre");
@@ -114,88 +92,142 @@ public class Operador extends HttpServlet {
                 System.out.println("No se ha podido eliminar el usuario");
             }
 
-            response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadousuarios");
+                } else if (request.getParameter("cancelar") != null) {
 
-        } else /// Reservas
-        if (action.equals("/listadoreservas")) {
+                    response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadousuarios");
 
-            request.setAttribute("reservas", servicioOperador.listadoReservas());
-
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/listado.jsp");
-            rd.forward(request, response);
-        } else if (action.equals("/busqueda")) {
-            if (request.getParameter("ciudad") != null) {
-                request.setAttribute("tab", 1);
-                String ciudad = request.getParameter("buscar");
-                request.setAttribute("hotelesc", servicioOperador.consultaCiudad(ciudad));
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/busqueda.jsp");
-                rd.forward(request, response);
-            } else if (request.getParameter("hotel") != null) {
-                request.setAttribute("tab", 2);
-                String hotel = request.getParameter("buscar");
-                request.setAttribute("hotelesh", servicioOperador.consultaNombreHotel(hotel));
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/busqueda.jsp");
-                rd.forward(request, response);
-            } else if (request.getParameter("fecha") != null) {
-                request.setAttribute("tab", 3);
-                String ciudad = request.getParameter("ciudadBusqueda");
-                String fEntrada = request.getParameter("fechaEntrada");
-                String fSalida = request.getParameter("fechaSalida");
-                Date fechaEntradaD = new Date(Integer.parseInt(fEntrada.substring(0, 4)) - 1900, Integer.parseInt(fEntrada.substring(5, 7)) - 1, Integer.parseInt(fEntrada.substring(8, 10)));
-                Date fechaSalidaD = new Date(Integer.parseInt(fSalida.substring(0, 4)) - 1900, Integer.parseInt(fSalida.substring(5, 7)) - 1, Integer.parseInt(fSalida.substring(8, 10)));
-                GregorianCalendar feg = new GregorianCalendar();
-                GregorianCalendar fsg = new GregorianCalendar();
-                feg.setTime(fechaEntradaD);
-                fsg.setTime(fechaSalidaD);
-                try {
-                    XMLGregorianCalendar fechaEntrada = DatatypeFactory.newInstance().newXMLGregorianCalendar(feg);
-                    XMLGregorianCalendar fechaSalida = DatatypeFactory.newInstance().newXMLGregorianCalendar(fsg);
-                    request.setAttribute("hotelesf", servicioOperador.consultaFecha(ciudad, fechaEntrada, fechaSalida));
-                } catch (DatatypeConfigurationException ex) {
-                    //
+                } else {
+                    RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/usuarios/nuevo.jsp");
+                    rd.forward(request, response);
                 }
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/busqueda.jsp");
-                rd.forward(request, response);
-            } else {
-                request.setAttribute("tab", 1);
+                break;
 
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/busqueda.jsp");
+            case "/modificarusuario":
+                if (request.getParameter("modificar") != null) {
+                    String nombre = request.getParameter("nombre");
+                    String direccion = request.getParameter("direccion");
+                    String dni = request.getParameter("dni");
+
+                    Usuario usuario = servicioOperador.obtenerUsuario(dni);
+                    usuario.setDireccion(direccion);
+                    usuario.setNombre(nombre);
+
+                    response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadousuarios");
+
+                } else if (request.getParameter("cancelar") != null) {
+                    response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadousuarios");
+                } else {
+                    Usuario usuario = servicioOperador.obtenerUsuario((String) request.getParameter("dni"));
+                    request.setAttribute("usuario", usuario);
+                    RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/usuarios/modificar.jsp");
+                    rd.forward(request, response);
+                }
+                break;
+
+            case "/eliminarusuario":
+                try {
+                    servicioOperador.bajaUsuario(request.getParameter("dni"));
+                } catch (UsuarioErrorEliminar_Exception | UsuarioNoEncontrado_Exception | ReservaErrorCambiarUsuario_Exception ex) {
+                    System.out.println("No se ha podido eliminar el usuario");
+                }
+                response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadousuarios");
+                break;
+
+            case "/listadoreservas": {
+                request.setAttribute("reservas", servicioOperador.listadoReservas());
+                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/listado.jsp");
                 rd.forward(request, response);
+                break;
             }
 
-        } else if (action.equals("/crearreserva")) {
-            if (request.getParameter("crear") != null) {
-                String hotel = request.getParameter("hotel");
-                String dni = request.getParameter("dni");
-                int simples = Integer.parseInt(request.getParameter("simples"));
-                int dobles = Integer.parseInt(request.getParameter("dobles"));
-                int triples = Integer.parseInt(request.getParameter("triples"));
-                String fEntrada = request.getParameter("fechaEntrada");
-                String fSalida = request.getParameter("fechaSalida");
-                Date fechaEntradaD = new Date(Integer.parseInt(fEntrada.substring(0, 4)) - 1900, Integer.parseInt(fEntrada.substring(5, 7)) - 1, Integer.parseInt(fEntrada.substring(8, 10)));
-                Date fechaSalidaD = new Date(Integer.parseInt(fSalida.substring(0, 4)) - 1900, Integer.parseInt(fSalida.substring(5, 7)) - 1, Integer.parseInt(fSalida.substring(8, 10)));
-                GregorianCalendar feg = new GregorianCalendar();
-                GregorianCalendar fsg = new GregorianCalendar();
-                feg.setTime(fechaEntradaD);
-                fsg.setTime(fechaSalidaD);
-                try {
-                    XMLGregorianCalendar fechaEntrada = DatatypeFactory.newInstance().newXMLGregorianCalendar(feg);
-                    XMLGregorianCalendar fechaSalida = DatatypeFactory.newInstance().newXMLGregorianCalendar(fsg);
-                    servicioOperador.crearReserva(fechaEntrada, fechaSalida, simples, dobles, triples, dni, hotel);
-                } catch (UsuarioNoEncontrado_Exception | HotelErrorBloquear_Exception | HotelNoEncontrado_Exception | ReservaErrorDatos_Exception | ReservaNoPosible_Exception | HotelErrorActualizar_Exception ex) {
-                    System.out.println("No se ha podido crear la reserva");
-                } catch (DatatypeConfigurationException ex) {
+            case "/busqueda":
+                if (request.getParameter("ciudad") != null) {
+                    request.setAttribute("tab", 1);
+                    String ciudad = request.getParameter("buscar");
+                    request.setAttribute("hotelesc", servicioOperador.consultaCiudad(ciudad));
+                    RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/busqueda.jsp");
+                    rd.forward(request, response);
+                } else if (request.getParameter("hotel") != null) {
+                    request.setAttribute("tab", 2);
+                    String hotel = request.getParameter("buscar");
+                    request.setAttribute("hotelesh", servicioOperador.consultaNombreHotel(hotel));
+                    RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/busqueda.jsp");
+                    rd.forward(request, response);
+                } else if (request.getParameter("fecha") != null) {
+                    request.setAttribute("tab", 3);
+                    String ciudad = request.getParameter("ciudadBusqueda");
+                    String fEntrada = request.getParameter("fechaEntrada");
+                    String fSalida = request.getParameter("fechaSalida");
+                    Date fechaEntradaD = new Date(Integer.parseInt(fEntrada.substring(0, 4)) - 1900, Integer.parseInt(fEntrada.substring(5, 7)) - 1, Integer.parseInt(fEntrada.substring(8, 10)));
+                    Date fechaSalidaD = new Date(Integer.parseInt(fSalida.substring(0, 4)) - 1900, Integer.parseInt(fSalida.substring(5, 7)) - 1, Integer.parseInt(fSalida.substring(8, 10)));
+                    GregorianCalendar feg = new GregorianCalendar();
+                    GregorianCalendar fsg = new GregorianCalendar();
+                    feg.setTime(fechaEntradaD);
+                    fsg.setTime(fechaSalidaD);
+                    try {
+                        XMLGregorianCalendar fechaEntrada = DatatypeFactory.newInstance().newXMLGregorianCalendar(feg);
+                        XMLGregorianCalendar fechaSalida = DatatypeFactory.newInstance().newXMLGregorianCalendar(fsg);
+                        request.setAttribute("hotelesf", servicioOperador.consultaFecha(ciudad, fechaEntrada, fechaSalida));
+                    } catch (DatatypeConfigurationException ex) {
+                        //
+                    }
+                    RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/busqueda.jsp");
+                    rd.forward(request, response);
+                } else if (request.getParameter("cReserva") != null) {
+                    
+                    String nombreH = request.getParameter("nombreH");
+                    request.setAttribute("nombreHotel", nombreH);
+                    
+                    RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/crear.jsp");
+                    rd.forward(request, response);
+                    
+                } else {
+                    request.setAttribute("tab", 1);
 
+                    RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/busqueda.jsp");
+                    rd.forward(request, response);
                 }
+                break;
 
-                response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadoreservas");
-            } else if (request.getParameter("cancelar") != null) {
-                response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadoreservas");
-            } else {
-                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/crear.jsp");
+            case "/crearreserva":
+                if (request.getParameter("crear") != null) {
+                    String hotel = request.getParameter("hotel");
+                    String dni = request.getParameter("dni");
+                    int simples = Integer.parseInt(request.getParameter("simples"));
+                    int dobles = Integer.parseInt(request.getParameter("dobles"));
+                    int triples = Integer.parseInt(request.getParameter("triples"));
+                    String fEntrada = request.getParameter("fechaEntrada");
+                    String fSalida = request.getParameter("fechaSalida");
+                    Date fechaEntradaD = new Date(Integer.parseInt(fEntrada.substring(0, 4)) - 1900, Integer.parseInt(fEntrada.substring(5, 7)) - 1, Integer.parseInt(fEntrada.substring(8, 10)));
+                    Date fechaSalidaD = new Date(Integer.parseInt(fSalida.substring(0, 4)) - 1900, Integer.parseInt(fSalida.substring(5, 7)) - 1, Integer.parseInt(fSalida.substring(8, 10)));
+                    GregorianCalendar feg = new GregorianCalendar();
+                    GregorianCalendar fsg = new GregorianCalendar();
+                    feg.setTime(fechaEntradaD);
+                    fsg.setTime(fechaSalidaD);
+                    try {
+                        XMLGregorianCalendar fechaEntrada = DatatypeFactory.newInstance().newXMLGregorianCalendar(feg);
+                        XMLGregorianCalendar fechaSalida = DatatypeFactory.newInstance().newXMLGregorianCalendar(fsg);
+                        servicioOperador.crearReserva(fechaEntrada, fechaSalida, simples, dobles, triples, dni, hotel);
+                    } catch (UsuarioNoEncontrado_Exception | HotelErrorBloquear_Exception | HotelNoEncontrado_Exception | ReservaErrorDatos_Exception | ReservaNoPosible_Exception | HotelErrorActualizar_Exception ex) {
+                        System.out.println("No se ha podido crear la reserva");
+                    } catch (DatatypeConfigurationException ex) {
+
+                    }
+
+                    response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadoreservas");
+                } else if (request.getParameter("cancelar") != null) {
+                    response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadoreservas");
+                } else {
+                    RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/crear.jsp");
+                    rd.forward(request, response);
+                }
+                break;
+
+            case "/modificarreserva": {
+                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/modificar.jsp");
                 rd.forward(request, response);
+                break;
             }
-        } else if (action.equals("/modificarreserva")) {
 
             if (request.getParameter("modificar") != null) {
                 int id = Integer.parseInt(request.getParameter("id"));
@@ -239,8 +271,9 @@ public class Operador extends HttpServlet {
             }
             response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadoreservas");
 
-        } else {
-            response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadousuarios");
+            default:
+                response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadousuarios");
+                break;
         }
 
     }
