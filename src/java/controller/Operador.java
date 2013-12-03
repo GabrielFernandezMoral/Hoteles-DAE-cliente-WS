@@ -7,6 +7,7 @@ package controller;
 import es.ujaen.dae.gabri_raul.hoteles.servicios.HotelErrorActualizar_Exception;
 import es.ujaen.dae.gabri_raul.hoteles.servicios.HotelErrorBloquear_Exception;
 import es.ujaen.dae.gabri_raul.hoteles.servicios.HotelNoEncontrado_Exception;
+import es.ujaen.dae.gabri_raul.hoteles.servicios.Reserva;
 import es.ujaen.dae.gabri_raul.hoteles.servicios.ReservaErrorCambiarUsuario_Exception;
 import es.ujaen.dae.gabri_raul.hoteles.servicios.ReservaErrorDatos_Exception;
 import es.ujaen.dae.gabri_raul.hoteles.servicios.ReservaNoEncontrada_Exception;
@@ -93,10 +94,8 @@ public class Operador extends HttpServlet {
                 String nombre = request.getParameter("nombre");
                 String direccion = request.getParameter("direccion");
                 String dni = request.getParameter("dni");
-
-                Usuario usuario = servicioOperador.obtenerUsuario(dni);
-                usuario.setDireccion(direccion);
-                usuario.setNombre(nombre);
+                
+                servicioOperador.modificarUsuario(nombre, dni, direccion);
 
                 response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadousuarios");
 
@@ -198,8 +197,39 @@ public class Operador extends HttpServlet {
             }
         } else if (action.equals("/modificarreserva")) {
 
-            RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/modificar.jsp");
-            rd.forward(request, response);
+            if (request.getParameter("modificar") != null) {
+                int id = Integer.parseInt(request.getParameter("id"));
+                String hotel = request.getParameter("hotel");
+                String usuario = request.getParameter("usuario");
+                int simples = Integer.parseInt(request.getParameter("simples"));
+                int dobles = Integer.parseInt(request.getParameter("dobles"));
+                int triples = Integer.parseInt(request.getParameter("triples"));
+                String fEntrada = request.getParameter("fechaentrada");
+                String fSalida = request.getParameter("fechasalida");
+                Date fechaEntradaD = new Date(Integer.parseInt(fEntrada.substring(0, 4)) - 1900, Integer.parseInt(fEntrada.substring(5, 7)) - 1, Integer.parseInt(fEntrada.substring(8, 10)));
+                Date fechaSalidaD = new Date(Integer.parseInt(fSalida.substring(0, 4)) - 1900, Integer.parseInt(fSalida.substring(5, 7)) - 1, Integer.parseInt(fSalida.substring(8, 10)));
+                GregorianCalendar feg = new GregorianCalendar();
+                GregorianCalendar fsg = new GregorianCalendar();
+                feg.setTime(fechaEntradaD);
+                fsg.setTime(fechaSalidaD);
+                try{
+                    XMLGregorianCalendar fechaEntrada = DatatypeFactory.newInstance().newXMLGregorianCalendar(feg);
+                    XMLGregorianCalendar fechaSalida = DatatypeFactory.newInstance().newXMLGregorianCalendar(fsg);
+                    servicioOperador.modificarReserva(id, fechaEntrada, fechaSalida, simples, dobles, triples, hotel, usuario);
+                }catch (ErrorModificarReserva_Exception | DatatypeConfigurationException ex){
+                    System.out.println("No se ha podido modificar la reserva");
+                }
+
+                response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadoreservas");
+
+            } else if (request.getParameter("cancelar") != null) {
+                response.sendRedirect("/Hoteles-DAE-cliente-WS/operador/listadoreservas");
+            } else {
+                Reserva reserva = servicioOperador.obtenerReserva(Integer.parseInt(request.getParameter("id")));
+                request.setAttribute("reserva", reserva);
+                RequestDispatcher rd = request.getRequestDispatcher("/WEB-INF/operador/reservas/modificar.jsp");
+                rd.forward(request, response);
+            }
 
         } else if (action.equals("/eliminarreserva")) {
             try {
