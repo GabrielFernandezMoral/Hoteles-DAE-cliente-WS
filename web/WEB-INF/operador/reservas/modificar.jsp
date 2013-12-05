@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <jsp:include page="/WEB-INF/operador/cabecera.jspf"/>
 
 <!-- container -->
@@ -13,19 +14,20 @@
             <div class="form-group">
                 <label class="col-lg-2 control-label">ID</label>
                 <div class="col-lg-6">
-                    <input disabled="true" type="text" name="id" class="form-control" value="${reserva.id}"/> 
+                    <input disabled="true" type="text" class="form-control" value="${reserva.id}"/> 
+                    <input disabled="true" type="hidden" name="id" class="form-control" value="${reserva.id}"/> 
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-lg-2 control-label">Fecha de entrada</label>
                 <div class="col-lg-6">
-                    <input type="text" name="fechaentrada" class="form-control" value="${reserva.fechaEntrada}"/> 
+                    <input type="text" name="fechaentrada" class="form-control" value="${fn:substring(reserva.fechaEntrada, 0, 10)}"/> 
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-lg-2 control-label">Fecha de salida</label>
                 <div class="col-lg-6">
-                    <input type="text" name="fechasalida" class="form-control" value="${reserva.fechaSalida}"/> 
+                    <input type="text" name="fechasalida" class="form-control" value="${fn:substring(reserva.fechaSalida, 0, 10)}"/> 
                 </div>
             </div>
                 <div class="form-group">
@@ -43,19 +45,19 @@
             <div class="form-group">
                 <label class="col-lg-2 control-label">Habitaciones triples</label>
                 <div class="col-lg-6">
-                    <input type="text" name="dobles" class="form-control" value="${reserva.triples}"/> 
+                    <input type="text" name="triples" class="form-control" value="${reserva.triples}"/> 
                 </div>
             </div>
                 <div class="form-group">
                 <label class="col-lg-2 control-label">Hotel</label>
                 <div class="col-lg-6">
-                    <input disabled="true" type="text" name="hotel" class="form-control" value="${reserva.hotel}"/> 
+                    <input disabled="true" type="text" name="hotel" class="form-control" value="${reserva.hotel.nombre}"/> 
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-lg-2 control-label">Usuario</label>
                 <div class="col-lg-6">
-                    <input disabled="true" type="text" name="usuario" class="form-control" value="${reserva.usuario}"/> 
+                    <input disabled="true" type="text" name="usuario" class="form-control" value="${reserva.usuario.dni}"/> 
                 </div>
             </div>
             <div class="col-lg-offset-2 col-lg-10">

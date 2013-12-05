@@ -19,7 +19,8 @@
             <div class="form-group">
                 <label class="col-lg-2 control-label">DNI</label>
                 <div class="col-lg-6">
-                    <input type="text" name="dni" class="form-control" value="${usuario.dni}"/> 
+                    <input type="text" disabled="true" class="form-control" value="${usuario.dni}"/> 
+                    <input type="hidden" name="dni" class="form-control" value="${usuario.dni}"/> 
                 </div>
             </div>
             <div class="form-group">

@@ -1,5 +1,6 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <jsp:include page="/WEB-INF/operador/cabecera.jspf"/>
 
 <!-- container -->
@@ -33,8 +34,8 @@
             <tbody>
                 <c:forEach var="r" items="${reservas}" varStatus="estado">
                     <tr>
-                        <td>${r.fechaEntrada}</td>
-                        <td>${r.fechaSalida}</td>
+                        <td>${fn:substring(r.fechaEntrada, 0, 10)}</td>
+                        <td>${fn:substring(r.fechaSalida, 0, 10)}</td>
                         <td>${r.simples}</td>
                         <td>${r.dobles}</td>
                         <td>${r.triples}</td>
