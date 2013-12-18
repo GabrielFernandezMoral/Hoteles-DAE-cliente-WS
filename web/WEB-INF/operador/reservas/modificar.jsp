@@ -51,13 +51,15 @@
                 <div class="form-group">
                 <label class="col-lg-2 control-label">Hotel</label>
                 <div class="col-lg-6">
-                    <input disabled="true" type="text" name="hotel" class="form-control" value="${reserva.hotel.nombre}"/> 
+                    <input disabled="true" type="text" class="form-control" value="${reserva.hotel.nombre}"/> 
+                    <input type="hidden" name="hotel" class="form-control" value="${reserva.hotel.nombre}"/> 
                 </div>
             </div>
             <div class="form-group">
                 <label class="col-lg-2 control-label">Usuario</label>
                 <div class="col-lg-6">
-                    <input disabled="true" type="text" name="usuario" class="form-control" value="${reserva.usuario.dni}"/> 
+                    <input disabled="true" type="text" class="form-control" value="${reserva.usuario.dni}"/> 
+                    <input type="hidden" name="usuario" class="form-control" value="${reserva.usuario.dni}"/> 
                 </div>
             </div>
             <div class="col-lg-offset-2 col-lg-10">
